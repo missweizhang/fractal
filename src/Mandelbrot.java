@@ -1,6 +1,7 @@
 import java.awt.geom.Rectangle2D;
 
-/** computes fractals based on the Mandelbrot series */
+/** computes fractals based on the Mandelbrot series 
+ *  z_(n+1) = z_n ^2 + c */
 public class Mandelbrot extends FractalGenerator {
 	
 	/** number of iterations for series to be considered diverging */ 
@@ -16,7 +17,7 @@ public class Mandelbrot extends FractalGenerator {
 	}
 
 	
-	/** compute Mandelbrot series <em>z_n</em> = z_(n-1) ^ 2 + c,
+	/** compute Mandelbrot series <em>z_(n+1)</em> = z_n ^ 2 + c,
 	 *  where c = x + iy is a complex number representing 
 	 *  a point on the 2D image
 	 *  
@@ -36,11 +37,11 @@ public class Mandelbrot extends FractalGenerator {
 				return i;
 			}
 
-			// calculate next iteration z_n
+			// calculate next iteration z_(n+1)
 			// z^2 + c = (re + i*im)^2 + x + i*y
 			//         = re^2 - im^2 + 2*i*re*im + x + i*y
 			double nextReal = real * real - imaginary * imaginary + x;
-			double nextImaginary = 2 * real * imaginary + y;
+			double nextImaginary = 2.0 * real * imaginary + y;
 
 			real = nextReal;
 			imaginary = nextImaginary;

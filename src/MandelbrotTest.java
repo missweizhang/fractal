@@ -32,5 +32,8 @@ public class MandelbrotTest {
 		assertEquals(-1.5, range.getY(), DELTA);
 		assertEquals(3.0, range.getHeight(), DELTA);
 		assertEquals(3.0, range.getWidth(), DELTA);
+		
+		assertEquals(1.0, range.getMaxX(), DELTA);
+		assertEquals(1.5, range.getMaxY(), DELTA);	
 	}
 }
