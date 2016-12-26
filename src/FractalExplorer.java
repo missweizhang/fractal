@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -90,10 +91,11 @@ public class FractalExplorer {
 	
 	/** handles action events: from buttons and combo box */
 	private class ActionHandler implements ActionListener {
-		private final JFrame frame;
-		
-		ActionHandler(final JFrame frame) {
-			this.frame = frame;
+		private final Component parent;
+
+		/** constructor initializes parent component for centering dialog boxes */
+		ActionHandler(final Component parent) {
+			this.parent = parent;
 		}
 
 		/** draw new fractal or reset image to zoom out or save to file */
@@ -115,7 +117,7 @@ public class FractalExplorer {
 				chooser.setFileFilter(filter);
 				chooser.setAcceptAllFileFilterUsed(false);
 
-				int returnVal = chooser.showSaveDialog(frame);
+				int returnVal = chooser.showSaveDialog(parent);
 				if (returnVal != JFileChooser.APPROVE_OPTION) {
 					return; // user canceled
 				}
@@ -125,7 +127,7 @@ public class FractalExplorer {
 					ImageIO.write(display.getImage(), "png", file);
 				}
 				catch (IOException exception) {
-					JOptionPane.showMessageDialog(frame, exception.getMessage(), 
+					JOptionPane.showMessageDialog(parent, exception.getMessage(), 
 							"Cannot Save Image", JOptionPane.ERROR_MESSAGE);
 				}
 				return; // don't refresh
