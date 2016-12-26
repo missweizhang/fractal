@@ -14,7 +14,7 @@ public class MandelbrotTest {
 		assertEquals(-1, fractal.numIterations(0, 0));
 		
 		// immediately diverged |c| > 2
-		assertEquals(0, fractal.numIterations(1.732051, 1.0));
+		assertEquals(1, fractal.numIterations(1.732051, 1.0));
 		
 		// diverges after several iterations
 		assertTrue( 0 < fractal.numIterations(1.0, 1.0));
