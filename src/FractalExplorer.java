@@ -2,6 +2,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -20,6 +23,9 @@ public class FractalExplorer {
 	
 	/** calculation engine for generating fractals */
 	private FractalGenerator fractal = new Mandelbrot();
+	
+	/** UI component for choosing between fractal generators */
+	JComboBox<FractalGenerator> fractalChooser = new JComboBox<>();
 	
 	/** represent current zoom range */
 	private Rectangle2D.Double range = new Rectangle2D.Double();
@@ -41,9 +47,24 @@ public class FractalExplorer {
 		display.addMouseListener(new MouseHandler());
 		frame.add(display, BorderLayout.CENTER);
 		
+		ActionListener handler = new ActionHandler();
+		
 		JButton button = new JButton("Reset Display");
-		button.addActionListener(new ActionHandler());
+		button.addActionListener(handler);
 		frame.add(button, BorderLayout.SOUTH);
+		
+		JPanel topPanel = new JPanel();
+		
+		JLabel label = new JLabel("Fractal:");
+		topPanel.add(label);
+		
+		fractalChooser.addItem(this.fractal); // default Mandelbrot
+		fractalChooser.addItem(new Tricorn());
+		fractalChooser.addItem(new BurningShip());	
+		fractalChooser.addActionListener(handler);
+		
+		topPanel.add(fractalChooser);
+		frame.add(topPanel, BorderLayout.NORTH);	
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -53,12 +74,20 @@ public class FractalExplorer {
 	}
 	
 	
-	/** handles button click events by zooming out */
+	/** handles action events: from buttons and combo box */
 	private class ActionHandler implements ActionListener {
 		
-		/** reset display to initial zoom and draw */
+		/** draw new fractal or reset image to zoom out */
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
+			// choose new fractal type
+			if (e.getSource() == fractalChooser) {
+				fractal = (FractalGenerator) fractalChooser.getSelectedItem();				
+			}
+			
+			// refresh image for both new fractal type
+			// or for reset button click to zoom out
 			fractal.getInitialRange(range);
 			drawFractal();
 		}

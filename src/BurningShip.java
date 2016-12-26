@@ -54,4 +54,11 @@ public class BurningShip extends FractalGenerator {
 		// series did not diverge
 		return -1;
 	}
+
+	/** name of the fractal generator */
+	@Override
+	public String toString() {
+		return "Burning Ship";
+	} 
+	
 }

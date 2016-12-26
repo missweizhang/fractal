@@ -51,4 +51,11 @@ public class Tricorn extends FractalGenerator {
 		// series did not diverge
 		return -1;
 	}
+	
+	/** name of the fractal generator */
+	@Override
+	public String toString() {
+		return "Tricorn";
+	}
+	
 }
