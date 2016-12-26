@@ -1,23 +1,23 @@
-import java.awt.geom.Rectangle2D;
 import java.awt.BorderLayout;
-import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /** Swing GUI for displaying fractals on a complex plane */
 public class FractalExplorer {
@@ -69,16 +69,14 @@ public class FractalExplorer {
 		bottomPanel.add(saveButton);
 		frame.add(bottomPanel, BorderLayout.SOUTH);
 		
-		JPanel topPanel = new JPanel();
-		
 		JLabel label = new JLabel("Fractal:");
-		topPanel.add(label);
-		
 		fractalChooser.addItem(this.fractal); // default Mandelbrot
 		fractalChooser.addItem(new Tricorn());
 		fractalChooser.addItem(new BurningShip());	
 		fractalChooser.addActionListener(handler);
 		
+		JPanel topPanel = new JPanel();
+		topPanel.add(label);
 		topPanel.add(fractalChooser);
 		frame.add(topPanel, BorderLayout.NORTH);	
 		
@@ -106,9 +104,11 @@ public class FractalExplorer {
 			if (e.getSource() == fractalChooser) {
 				fractal = (FractalGenerator) fractalChooser.getSelectedItem();
 			}
+			// reset to default zoom
 			else if (e.getActionCommand() == "reset") {
 				// nothing extra to do except what's common below
 			}
+			// save to PNG file
 			else if (e.getActionCommand() == "save") {
 				JFileChooser chooser = new JFileChooser();
 				FileFilter filter = new FileNameExtensionFilter("PNG Images", "png");
