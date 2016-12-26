@@ -16,6 +16,10 @@ public class JImageDisplay extends JComponent {
 		setPreferredSize(new Dimension(width, height));
 	}
 	
+	public BufferedImage getImage() {
+		return image;
+	}
+
 	/** sets all pixels in the image to black */
 	public void clearImage() {
 		int black = 0; // RGB value

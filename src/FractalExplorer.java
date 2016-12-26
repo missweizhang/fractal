@@ -5,12 +5,19 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 /** Swing GUI for displaying fractals on a complex plane */
 public class FractalExplorer {
@@ -47,11 +54,20 @@ public class FractalExplorer {
 		display.addMouseListener(new MouseHandler());
 		frame.add(display, BorderLayout.CENTER);
 		
-		ActionListener handler = new ActionHandler();
+		ActionListener handler = new ActionHandler(frame);
 		
-		JButton button = new JButton("Reset Display");
-		button.addActionListener(handler);
-		frame.add(button, BorderLayout.SOUTH);
+		JButton resetButton = new JButton("Reset Display");
+		resetButton.setActionCommand("reset");
+		resetButton.addActionListener(handler);
+
+		JButton saveButton = new JButton("Save");
+		saveButton.setActionCommand("save");
+		saveButton.addActionListener(handler);
+
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.add(resetButton);
+		bottomPanel.add(saveButton);
+		frame.add(bottomPanel, BorderLayout.SOUTH);
 		
 		JPanel topPanel = new JPanel();
 		
@@ -76,14 +92,43 @@ public class FractalExplorer {
 	
 	/** handles action events: from buttons and combo box */
 	private class ActionHandler implements ActionListener {
+		private final JFrame frame;
 		
-		/** draw new fractal or reset image to zoom out */
+		ActionHandler(final JFrame frame) {
+			this.frame = frame;
+		}
+
+		/** draw new fractal or reset image to zoom out or save to file */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			
 			// choose new fractal type
 			if (e.getSource() == fractalChooser) {
-				fractal = (FractalGenerator) fractalChooser.getSelectedItem();				
+				fractal = (FractalGenerator) fractalChooser.getSelectedItem();
+			}
+			else if (e.getActionCommand() == "reset") {
+				// nothing extra to do except what's common below
+			}
+			else if (e.getActionCommand() == "save") {
+				JFileChooser chooser = new JFileChooser();
+				FileFilter filter = new FileNameExtensionFilter("PNG Images", "png");
+				chooser.setFileFilter(filter);
+				chooser.setAcceptAllFileFilterUsed(false);
+
+				int returnVal = chooser.showSaveDialog(frame);
+				if (returnVal != JFileChooser.APPROVE_OPTION) {
+					return; // user canceled
+				}
+
+				File file = chooser.getSelectedFile();
+				try {
+					ImageIO.write(display.getImage(), "png", file);
+				}
+				catch (IOException exception) {
+					JOptionPane.showMessageDialog(frame, exception.getMessage(), 
+							"Cannot Save Image", JOptionPane.ERROR_MESSAGE);
+				}
+				return; // don't refresh
 			}
 			
 			// refresh image for both new fractal type
