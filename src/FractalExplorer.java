@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.SwingWorker;
 
 /** Swing GUI for displaying fractals on a complex plane */
 public class FractalExplorer {
@@ -159,34 +160,67 @@ public class FractalExplorer {
 		}
 	}
 	
-	
-	/** helper to render each pixel and display */
-	private void drawFractal() {
-		// loop over each pixel
-		for (int i=0; i<size; i++) {
-			for (int j=0; j<size; j++) {
-				
-				// compute coordinates
-				double x = FractalGenerator.getCoord(range.x, range.x + range.width, size, i);
-				double y = FractalGenerator.getCoord(range.y, range.y + range.height, size, j);
-				
-				// compute number of iterations for divergence
-				int n = fractal.numIterations(x, y);
-				
-				// draw
-				if (n == -1) { // black
-					display.drawPixel(i, j, 0); // 0 = black
-//					display.drawPixel(i, j, Color.BLACK.getRGB());
+
+	/** SwingWorker to compute color from costly number of iterations in background */
+	private class FractalWorker extends SwingWorker<Void, Void> {
+		/** the y coordinate */
+		private int y;
+
+		/** the row of colors computed */
+		private int[] colors;
+
+		/** construct worker for a row number, i.e. y coordinate */
+		FractalWorker(int y) {
+			this.y = y;
+		}
+
+		/** compute number of iterations for a row and store */
+		@Override
+		public Void doInBackground() {
+			double yCoord = FractalGenerator.getCoord(range.y, range.y + range.height, size, y);
+			colors = new int[size];
+
+			// compute color for row based on number of fractal iterations until divergence
+			for (int x=0; x<size; x++) {
+				double xCoord = FractalGenerator.getCoord(range.y, range.y + range.height, size, x);
+				colors[x] = fractal.numIterations(xCoord, yCoord);
+			}
+			return null;
+		}
+
+		/** paint color from number of iterations and update display */
+		@Override
+		protected void done() {
+
+			// loop over each column of pixels
+			for (int x=0; x<size; x++) {
+				if (colors[x] == -1) {// black
+					display.drawPixel(x, y, 0); // 0 = black
+//					display.drawPixel(x, y, Color.BLACK.getRGB());
 				}
 				else { // smooth color based on number of iterations 
-					float hue = 0.7f + (float) n / 200f;
-					display.drawPixel(i, j, Color.HSBtoRGB(hue, 1f, 1f));
+					float hue = 0.7f + (float) colors[x] / 200f;
+					display.drawPixel(x, y, Color.HSBtoRGB(hue, 1f, 1f));
 				}
 			}
+
+			// update display for row y, width=size, height=1
+			// note: unused first parameter set to 0
+			display.repaint(0, y, size, 1);
 		}
-		
-		// update display
-		display.repaint();
+	}
+
+
+	/** helper to render each pixel and display */
+	private void drawFractal() {
+
+		// loop over each row of pixels
+		for (int y=0; y<size; y++) {
+
+			// compute color on background thread then paint
+			FractalWorker w = new FractalWorker(y);
+			w.execute();
+		}
 	}
 	
 	
