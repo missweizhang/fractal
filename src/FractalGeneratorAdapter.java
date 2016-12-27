@@ -1,5 +1,4 @@
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.function.BinaryOperator;
 
 /**
@@ -14,9 +13,6 @@ public abstract class FractalGeneratorAdapter extends FractalGenerator {
 	/** name of the fractal generator */
 	private String name;
 
-	/** default initial zoom range */
-	private Rectangle2D.Double initialRange;
-
 	/** define iteration function for generating the next complex number
 	 *  in the fractal series z_(n+1) = f(z_n, c)
 	 * */
@@ -24,22 +20,9 @@ public abstract class FractalGeneratorAdapter extends FractalGenerator {
 
 
 	/** constructs a general fractal generator */
-	FractalGeneratorAdapter(String name, Rectangle2D.Double range,
-			BinaryOperator<Point2D.Double> mapper) {
+	FractalGeneratorAdapter(String name, BinaryOperator<Point2D.Double> mapper) {
 		this.name = name;
-		initialRange = (Rectangle2D.Double) range.clone();
 		iterationStep = mapper;
-	}
-
-
-	/** set initial zoom range
-	 */
-	@Override
-	public void getInitialRange(Rectangle2D.Double range) {
-		range.x = initialRange.x;
-		range.y = initialRange.y;
-		range.width = initialRange.width;
-		range.height = initialRange.height;
 	}
 
 

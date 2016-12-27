@@ -9,12 +9,21 @@ public class Tricorn extends FractalGeneratorAdapter {
 	 *  where conj denotes the complex conjugate
 	 *  initial zoom range (-2, -2) to (2, 2) */
 	public Tricorn() {
-		super("Tricorn",
-				new Rectangle2D.Double(-2.0, -2.0, 4.0, 4.0),
-				(z, c) ->
-					new Point2D.Double(z.x * z.x - z.y * z.y + c.x,
-									   -2.0 * z.x * z.y + c.y)
+		super("Tricorn", (z, c) ->
+				new Point2D.Double(z.x * z.x - z.y * z.y + c.x,
+								   -2.0 * z.x * z.y + c.y)
 		);
 	}
+
+
+	/** set the initial zoom range to (-2, -2) to (2, 2) */
+	@Override
+	public void getInitialRange(Rectangle2D.Double range) {
+        range.x = -2.0;
+        range.y = -2.0;
+        range.width = 4.0;
+        range.height = 4.0;
+	}
+
 
 }
