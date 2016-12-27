@@ -35,10 +35,18 @@ public class FractalExplorer {
 	
 	/** UI component for choosing between fractal generators */
 	JComboBox<FractalGenerator> fractalChooser = new JComboBox<>();
+
+	/** reset button */
+	JButton resetButton = new JButton("Reset Display");
+
+	/** save button */
+	JButton saveButton = new JButton("Save");
 	
 	/** represent current zoom range */
 	private Rectangle2D.Double range = new Rectangle2D.Double();
 	
+	/** number of rows remaining to draw: control concurrency */
+	int nRowsRemaining;
 	
 	/** constructor initializes private variables */
 	public FractalExplorer(int size) {
@@ -58,11 +66,9 @@ public class FractalExplorer {
 		
 		ActionListener handler = new ActionHandler(frame);
 		
-		JButton resetButton = new JButton("Reset Display");
 		resetButton.setActionCommand("reset");
 		resetButton.addActionListener(handler);
 
-		JButton saveButton = new JButton("Save");
 		saveButton.setActionCommand("save");
 		saveButton.addActionListener(handler);
 
@@ -148,6 +154,10 @@ public class FractalExplorer {
 		/** zoom in around mouse click and draw */
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			if (nRowsRemaining > 0) { // busy, not done drawing!
+				return; // ignore mouse click
+			}
+
 			// get mouse coordinates
 			double x = FractalGenerator.getCoord(range.x, range.x + range.width, 
 												 size, e.getX());
@@ -160,6 +170,13 @@ public class FractalExplorer {
 		}
 	}
 	
+
+	/** enable or disable UI components */
+	private void enableUI(boolean val) {
+		saveButton.setEnabled(val);
+		resetButton.setEnabled(val);
+		fractalChooser.setEnabled(val);
+	}
 
 	/** SwingWorker to compute color from costly number of iterations in background */
 	private class FractalWorker extends SwingWorker<Void, Void> {
@@ -207,12 +224,20 @@ public class FractalExplorer {
 			// update display for row y, width=size, height=1
 			// note: unused first parameter set to 0
 			display.repaint(0, y, size, 1);
+
+			// enable UI when done drawing all rows
+			nRowsRemaining--;
+			if (nRowsRemaining == 0) {
+				enableUI(true);
+			}
 		}
 	}
 
 
 	/** helper to render each pixel and display */
 	private void drawFractal() {
+		enableUI(false); // disable, we're busy!
+		nRowsRemaining = size;
 
 		// loop over each row of pixels
 		for (int y=0; y<size; y++) {
@@ -220,6 +245,7 @@ public class FractalExplorer {
 			// compute color on background thread then paint
 			FractalWorker w = new FractalWorker(y);
 			w.execute();
+			// enable UI only when worker is all done in FractalWorker.done()
 		}
 	}
 	
