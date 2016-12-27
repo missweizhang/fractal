@@ -13,10 +13,10 @@ public class BurningShipTest {
 		assertEquals(-1, fractal.numIterations(0, 0));
 		
 		// |2 + i| > 2, diverges immediately
-		assertEquals(0, fractal.numIterations(2.0, 1.0));
+		assertEquals(1, fractal.numIterations(2.0, 1.0));
 
-		// c = 1 + i diverges after one iteration
-		assertEquals(1, fractal.numIterations(1.0, 1.0));	
+		// c = 1 + i diverges after several iteration
+		assertEquals(2, fractal.numIterations(1.0, 1.0));
 	}
 
 	static final double DELTA = 1e-4;
