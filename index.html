@@ -6,10 +6,11 @@
     <noscript>A browser with JavaScript enabled is required for this page to operate properly.</noscript>
     <h1>Fractal Explorer</h1>
     <p>This applet has been deployed with the applet tag <em>without</em> using JNLP</p>
+    <p>Try running on Mozilla Firefox</p>
     <applet
         alt = "Fractal Explorer Applet Demo"
-        code = 'bin.FractalExplorer'
-        archive = 'FractalExplorer.jar',
+        code = 'FractalExplorer.class'
+		codebase = 'bin'
         width = 800,
         height = 800 >
       <param name="permissions" value="sandbox">
