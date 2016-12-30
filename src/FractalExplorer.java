@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -17,12 +18,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.SwingWorker;
 
 /** Swing GUI for displaying fractals on a complex plane */
-public class FractalExplorer {
+public class FractalExplorer extends JApplet {
 	
 	/** display width and height in pixels */
 	private int size;
@@ -48,23 +50,16 @@ public class FractalExplorer {
 	/** number of rows remaining to draw: control concurrency */
 	int nRowsRemaining;
 	
-	/** constructor initializes private variables */
-	public FractalExplorer(int size) {
-		this.size = size;
-		display = new JImageDisplay(size, size);
-		fractal.getInitialRange(range);
-	}
-	
 	
 	/** helper to set up Swing user interface */
 	private void createAndShowGUI() {
-		JFrame frame = new JFrame("Fractal Explorer");
-		frame.setLayout(new BorderLayout());
+		setSize(size, size);
+		setLayout(new BorderLayout());
 		
 		display.addMouseListener(new MouseHandler());
-		frame.add(display, BorderLayout.CENTER);
+		add(display, BorderLayout.CENTER);
 		
-		ActionListener handler = new ActionHandler(frame);
+		ActionListener handler = new ActionHandler(this);
 		
 		resetButton.setActionCommand("reset");
 		resetButton.addActionListener(handler);
@@ -75,7 +70,7 @@ public class FractalExplorer {
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.add(resetButton);
 		bottomPanel.add(saveButton);
-		frame.add(bottomPanel, BorderLayout.SOUTH);
+		add(bottomPanel, BorderLayout.SOUTH);
 		
 		JLabel label = new JLabel("Fractal:");
 		fractalChooser.addItem(this.fractal); // default Mandelbrot
@@ -86,13 +81,7 @@ public class FractalExplorer {
 		JPanel topPanel = new JPanel();
 		topPanel.add(label);
 		topPanel.add(fractalChooser);
-		frame.add(topPanel, BorderLayout.NORTH);	
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		frame.pack();
-		frame.setVisible(true);
-		frame.setResizable(false);
+		add(topPanel, BorderLayout.NORTH);
 	}
 	
 	
@@ -251,12 +240,24 @@ public class FractalExplorer {
 	
 	
     /**
-     * Entry-point for the application.  No command-line arguments are
-     * recognized at this time.
+     * Entry-point for the applet.
      **/
-	public static void main(String[] args) {
-		FractalExplorer explorer = new FractalExplorer(800);
-    	explorer.createAndShowGUI();			
-    	explorer.drawFractal();
+	public void init() {
+		// initialize private variables
+		size = 800;
+		display = new JImageDisplay(size, size);
+		fractal.getInitialRange(range);
+
+		// initialize GUI on event-dispatching thread
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					createAndShowGUI();
+					drawFractal();
+				}
+			});
+		} catch (Exception e) {
+			System.err.println("createGUI didn't complete successfully");
+		}
 	} 
 }

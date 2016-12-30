@@ -9,3 +9,9 @@ To compile:
 To run:
 > cd bin
 > java FractalExplorer
+
+To compile applet:
+> jar cvfm FractalExplorer.jar manifest.txt bin
+
+To load applet:
+> firefox index.html
