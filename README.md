@@ -1,7 +1,7 @@
 CS11 Lab3-5: Fractal Explorer
 http://courses.cms.caltech.edu/cs11/material/java/donnie/lab3/index.html
 
-Demo: missweizhang.github.io/fractal/
+Demo: https://missweizhang.github.io/fractal/
 
 Simple Swing GUI for viewing fractals
 
